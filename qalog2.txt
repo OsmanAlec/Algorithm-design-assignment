@@ -1,0 +1,11 @@
+2 5 05 9 5 135 303 machine malfunction. 404 fixed. 32
+2 5 05 12 50 512 606 material shortage. 101 more materials ordered. 71
+2 5 05 14 7 249 303 machine malfunction. 404 fixed. 14
+2 6 06 12 5 512 303 machine malfunction. 404 fixed. 88
+2 6 06 13 55 641 455 testing failure. 404 repaired. 56
+2 9 09 9 5 724 303 machine malfunction. 404 fixed. 79
+2 9 09 10 5 249 303 machine malfunction. 404 fixed. 42
+2 26 26 9 30 386 303 machine malfunction. 404 fixed. 71
+2 26 26 9 1 973 455 testing failure. 404 repaired. 24
+2 26 26 12 27 512 303 machine malfunction. 404 fixed. 56
+2 30 30 9 0 973 455 testing failure. 404 repaired. 24
