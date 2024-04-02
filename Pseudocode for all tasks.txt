@@ -1,0 +1,201 @@
+TASK 1
+
+FUNCTION mergesort(A, n) 
+	IF n < 2
+		return;
+	END IF 
+	middle = n / 2 
+	FOR i = 0 to mid
+		left_struct[i] = A[i]
+	END FOR
+	FOR i = mid to n
+		right_struct[i-mid] = A[i]
+	END FOR
+	mergesort(left_struct, mid)
+	mergesort(right, n - mid)
+	merge (A, left, right, mid, n-mid)
+	
+END FUNCTION
+
+FUNCTION merge (A, left, right, nL, nr)
+	i = 0
+	j = 0
+	k = 0
+	WHILE i < nL and j < nR
+		IF left[i].product_ID < right[j].product_ID
+            		A[k++] = left[i++]
+
+        	ELSE IF left[i].product_ID == right[j].product_ID and left[i].iss.code < right[j].iss.code
+            		A[k++] = left[i++]
+
+        	ELSE IF left[i].product_ID == right[j].product_ID and left[i].iss.code == right[j].iss.code and left[i].dt.time <= right[j].dt.time
+            		A[k++] = left[i++]
+        
+        	ELSE 
+            		A[k++] = right[j++]
+
+		END IF
+        
+    WHILE i < nL
+        A[k++] = left[i++]
+    
+    WHILE j < nR
+        A[k++] = right[j++]
+
+END FUNCTION
+
+
+TASK 2
+
+FUNCTION findIssues(data, issue_log, count)
+    k = 0
+
+    FOR i = 0, i < DATA_SIZE, i+=k
+        k = 0
+        issue_log[count].line_code = data[i].line_code
+        issue_log[count].product_ID = data[i].product_ID
+        
+        FOR j = i to DATA_SIZE
+            IF issue_log[count].product_ID == data[j].product_ID
+                issue_log[count].issuecode_list[k] = data[j].iss.code
+                k++
+            ELSE
+                break
+	    END IF
+        
+        issue_log[count].issuecode_list_len += k
+        count++
+	END FOR
+    END FOR
+END FUNCTION
+
+
+TASK 3
+FUNCTION binarySearch(data, search)
+    low = 0
+    high = DATA_SIZE - 1
+
+    WHILE low <= high
+        mid = low + (high - low) / 2
+
+        IF data[mid].product_ID == search
+            return mid
+        ELSE IF data[mid].product_ID < search
+            low = mid + 1
+        ELSE
+            high = mid - 1
+	END IF
+    END WHILE
+
+    return -1
+
+END FUNCTION
+
+
+TASK 4
+
+First we sort:
+
+FUNCTION min(a, b)
+    IF a < b 
+        RETURN a
+    ELSE
+        RETURN b
+    END IF
+END FUNCTION
+
+FUNCTION insertionSort(issue_log[MAX_ISSUES], left, right)
+    FOR i = left + 1 TO right
+        temp = issue_log[i]
+        j = i - 1
+        WHILE j >= left AND issue_log[j].product_ID > temp.product_ID
+            issue_log[j + 1] = issue_log[j]
+            j = j - 1
+        END WHILE
+        issue_log[j + 1] = temp
+    END FOR
+END FUNCTION
+
+FUNCTION timMerge(issue_log[], l, m, r)
+    len1 = m - l + 1
+    len2 = r - m
+    FOR i = 0 TO len1 - 1
+        left[i] = issue_log[l + i]
+    END FOR
+    FOR i = 0 TO len2 - 1
+        right[i] = issue_log[m + 1 + i]
+    END FOR
+    
+    i = 0
+    j = 0
+    k = l
+    WHILE i < len1 AND j < len2
+        IF left[i].product_ID <= right[j].product_ID 
+            issue_log[k] = left[i]
+            i = i + 1
+        ELSE
+            issue_log[k] = right[j]
+            j = j + 1
+        END IF
+        k = k + 1
+    END WHILE
+    
+    WHILE i < len1
+        issue_log[k] = left[i]
+        k = k + 1
+        i = i + 1
+    END WHILE
+    
+    WHILE j < len2
+        issue_log[k] = right[j]
+        k = k + 1
+        j = j + 1
+    END WHILE
+END FUNCTION
+
+FUNCTION timSort(issue_log[MAX_ISSUES], count)
+    FOR i = 0 TO count - 1 STEP RUN
+        insertionSort(issue_log, i, min((i + RUN - 1), (count - 1)))
+    END FOR
+    
+    FOR size = RUN TO count - 1 STEP 2 * size
+        FOR left = 0 TO count - 1 STEP 2 * size
+            mid = left + size - 1
+            right = min((left + 2 * size - 1), (count - 1))
+            IF mid < right
+                timMerge(issue_log, left, mid, right)
+            END IF
+        END FOR
+    END FOR
+END FUNCTION
+
+
+here is the linear search when it is sorted:
+
+FUNCTION summariseData(issue_log[MAX_ISSUES], count):
+    k = 0
+    l = 0
+    
+    FOR i = 0 TO count - 1 STEP k
+        k = 1
+        l = issue_log[i].issuecode_list_len
+        PRINT "Product with the ID of " + issue_log[i].product_ID + " has"
+        
+        FOR j = i + 1 TO count - 1:
+            IF issue_log[i].product_ID == issue_log[j].product_ID
+                l = l + issue_log[j].issuecode_list_len
+                k = k + 1
+            ELSE
+                EXIT FOR
+            END IF
+        END FOR
+        
+        PRINT l + " issues."
+    END FOR
+END FUNCTION
+
+
+
+
+    
+	
