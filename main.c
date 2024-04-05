@@ -64,12 +64,7 @@ void merge(struct QAlog A[], struct QAlog L[], struct QAlog R[],int nL, int nR);
 void findIssues(struct QAlog data[DATA_SIZE], struct issue_list issue_log[MAX_ISSUES], int *count);
 void printIssueLog (struct issue_list issue_log[MAX_ISSUES], int count);
 int findEarliestOccurance (struct QAlog data[DATA_SIZE], int search);
-void summariseData (struct issue_list issue_log[MAX_ISSUES], int count);
-int min(int a, int b);
-void insertionSort(struct issue_list issue_log[MAX_ISSUES], int left, int right);
-void timMerge(struct issue_list issue_log[], int l, int m, int r);
-void timSort (struct issue_list issue_log[MAX_ISSUES], int count);
-
+int summariseData (struct issue_list issue_log[MAX_ISSUES], int count, int);
 
 
 
@@ -85,8 +80,8 @@ int main (void){
 
     int count = 0; //keep track of unique product id and line code combinations
     int result = 0; //keep track of if product code is found for TASK 3
-    int search = 0; //valuable to search fore
-    int buffer = 0; //valuable to store user's input data to move along through the tasks
+    int search = 0; //valuable to search for
+    int buffer = 0; //valuable to store user's input data to move along through the tasks and act as an extra variable for TASK 4
 
     //OPEN FIRST FILE
     FILE *file = fopen("qalog1.txt", "r");
@@ -137,10 +132,9 @@ int main (void){
     printf("\nFourth Line Log\n");
     printStructure(fourthline_log);
 
+    //TASK 2
     printf("Beginning of TASK 2 if you wish to continue, type any number and press enter\n");
     scanf("%d", &buffer);
-
-    //TASK 2
     findIssues(firstline_log, issue_log, &count);
     findIssues(secondline_log, issue_log, &count);
     findIssues(thirdline_log, issue_log, &count);
@@ -148,10 +142,9 @@ int main (void){
 
     printIssueLog(issue_log, count);
 
+    //TASK3
     printf("Beginning of TASK 3 if you wish to continue, type any number and press enter\n");
     scanf("%d", &buffer);
-
-    //TASK3
     //Prompt for search ID
     printf("\nWhat product's ID issue code would you like to find?\n");
     scanf("%d", &search);
@@ -192,10 +185,14 @@ int main (void){
 
     printf("Beginning of TASK 4 if you wish to continue, type any number and press enter\n");
     scanf("%d", &buffer);
+
+    printf("Enter a valid product ID that you want to summarise the data of.\n");
+    scanf("%d", &search);
     //TASK 4
-    //Sort the issue log to prepare for TASK 4. Tim sort is best for this situation as issue_log is already partially sorted
-    timSort(issue_log, count);
-    summariseData(issue_log, count);
+    //Sort look through the issue log and count how many times the product_ID had issues
+    buffer = summariseData(issue_log, count, search);
+
+    printf("The product with the ID of: %d was found to have a total of %d issues across all production lines", search, buffer);
 
 
 
@@ -418,128 +415,17 @@ int findEarliestOccurance (struct QAlog data[DATA_SIZE], int search){
 }
 
 //TASK 4. when the issue_log's are sorted by product ID, it is easy to find issues for each product across  all lines
-void summariseData (struct issue_list issue_log[MAX_ISSUES], int count){
+int summariseData (struct issue_list issue_log[MAX_ISSUES], int count, int search){
 
-    int k = 0;
-    int l = 0;
-    for (int i = 0; i < count; i+=k){
-        k = 1;
-        l = issue_log[i].issuecode_list_len;
-        printf("\nProduct with the ID of %d has", issue_log[i].product_ID);
-        for (int j = i + 1; j < count; j++){
-            if (issue_log[i].product_ID == issue_log[j].product_ID){
-                l+=issue_log[j].issuecode_list_len;
-                k++;
-            }
-            else {
-                break;
-            }
+    int sum = 0;
+
+    for (int i = 0; i < count; i++){
+        if (search == issue_log[i].product_ID){
+            sum+= issue_log[i].issuecode_list_len;
         }
-        printf(" %d issues.\n", l);
     }
+
+    return sum;
 
     
-}
-
-//TASK 4
-int min(int a, int b){
-
-    if(a<b) return a;    
-
-    else return b; 
-}
-
-//TASK 4 insertion sort to sort out the sub arrays in tim sort
-void insertionSort(struct issue_list issue_log[MAX_ISSUES], int left, int right){
-
-    for (int i = left + 1; i <= right; i++) { 
-        //create temporary struct
-        struct issue_list temp = issue_log[i]; 
-        int j = i - 1; 
-        //if j has not gone under the limit and if issue log is more than temporary
-        while (j >= left && issue_log[j].product_ID > temp.product_ID) { 
-            //keep moving the structures.
-            issue_log[j + 1] = issue_log[j]; 
-            j--; 
-        } 
-        //once the place is found, put it back
-        issue_log[j + 1] = temp; 
-    } 
-}
-
-// Merge function merges the sorted runs. TASK 4
-void timMerge(struct issue_list issue_log[], int l, int m, int r) 
-{ 
-  
-    // Original struct is broken in two 
-    // parts left and right array 
-    int len1 = m - l + 1, len2 = r - m; 
-    struct issue_list left[len1], right[len2]; 
-    for (int i = 0; i < len1; i++) {
-        left[i] = issue_log[l + i]; 
-    }
-    for (int i = 0; i < len2; i++) {
-        right[i] = issue_log[m + 1 + i]; 
-    }
-  
-    int i = 0; 
-    int j = 0; 
-    int k = l; 
-  
-    // After comparing, we 
-    // merge those two structs 
-    // in larger sub struct 
-    while (i < len1 && j < len2) { 
-        if (left[i].product_ID <= right[j].product_ID) { 
-            issue_log[k] = left[i]; 
-            i++; 
-        } 
-        else { 
-            issue_log[k] = right[j]; 
-            j++; 
-        } 
-        k++; 
-    } 
-  
-    // Copy remaining elements of 
-    // left, if any 
-    while (i < len1) { 
-        issue_log[k] = left[i]; 
-        k++; 
-        i++; 
-    } 
-  
-    // Copy remaining element of 
-    // right, if any 
-    while (j < len2) { 
-        issue_log[k] = right[j]; 
-        k++; 
-        j++; 
-    } 
-} 
-
-//main sorting function for TASK 4
-void timSort (struct issue_list issue_log[MAX_ISSUES], int count){
-    // Sort individual subarrays of size RUN 
-    for (int i = 0; i < count; i += RUN) {
-        insertionSort(issue_log, i, min((i + RUN - 1), (count - 1))); 
-    }
-  
-    // Start merging from size RUN
-    for (int size = RUN; size < count; size = 2 * size) { 
-  
-        for (int left = 0; left < count; left += 2 * size) { 
-  
-            // Find ending point of 
-            // left sub struct 
-            // mid+1 is starting point 
-            // of right sub struct 
-            int mid = left + size - 1; 
-            int right = min((left + 2 * size - 1), (count - 1)); 
-  
-            // merge sub struct issue_log[left....mid] & 
-            // issue_log[mid+1...right] 
-            if (mid < right) timMerge(issue_log, left, mid, right); 
-        } 
-    }
 }
